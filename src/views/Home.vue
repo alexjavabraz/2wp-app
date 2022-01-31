@@ -102,6 +102,7 @@ import { Action, State } from 'vuex-class';
 import SelectBitcoinWallet from '@/components/exchange/SelectBitcoinWallet.vue';
 import * as constants from '@/store/constants';
 import { PegInTxState } from '@/store/peginTx/types';
+import { EnvironmentAccessorService } from '@/services/enviroment-accessor.service';
 
 @Component({
   components: {
@@ -151,6 +152,7 @@ export default class Home extends Vue {
     this.STATUS = false;
     this.BTC2RBTC = this.peg === 'BTC2RBTC';
     this.RBTC2BTC = this.peg === 'RBTC2BTC';
+    console.log(EnvironmentAccessorService.getEnvironmentVariables());
   }
 }
 </script>

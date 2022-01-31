@@ -79,6 +79,7 @@ export abstract class WalletService {
   }
 
   public stopAskingForBalance(): Promise<void> {
+    console.log('Stop ask for balance call');
     let counter = 300;
     const period = 100;
     return new Promise<void>((resolve, reject) => {
@@ -108,6 +109,7 @@ export abstract class WalletService {
 
   // eslint-disable-next-line class-methods-use-this
   public async startAskingForBalance(sessionId: string, maxAmountPegin: number): Promise<void> {
+    console.log('Start Ask for balance call');
     // eslint-disable-next-line prefer-const
     let balanceAccumulated: AccountBalance = {
       legacy: new SatoshiBig(0, 'satoshi'),
@@ -116,6 +118,8 @@ export abstract class WalletService {
     };
 
     const maxAddressPerCall: number = this.getWalletAddressesPerCall();
+    console.log(`Start for: maxCall => ${this.getWalletMaxCall()}`);
+    console.log(`Start for: AddressPerCall => ${this.getWalletAddressesPerCall()}`);
     for (
       let startFrom = 0;
       startFrom < (this.getWalletMaxCall() * maxAddressPerCall) && this.subscribers.length !== 0;
@@ -126,10 +130,13 @@ export abstract class WalletService {
       if (addresses.length === 0) {
         throw new Error('Error getting list of addresses - List of addresses is empty');
       }
+      console.log('Address received');
+      console.log(addresses);
       if (this.subscribers.length !== 0) {
         // eslint-disable-next-line no-await-in-loop
         await store.dispatch(`pegInTx/${constants.PEGIN_TX_ADD_ADDRESSES}`, addresses);
       }
+      console.log('GetBalance endpoint called');
       // eslint-disable-next-line no-await-in-loop
       const balancesFound = await ApiService.getBalances(sessionId, addresses);
       const balances = {
@@ -137,6 +144,8 @@ export abstract class WalletService {
         segwit: new SatoshiBig(balancesFound.segwit || 0, 'satoshi'),
         nativeSegwit: new SatoshiBig(balancesFound.nativeSegwit || 0, 'satoshi'),
       };
+      console.log('balances from API:');
+      console.log(balancesFound);
 
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!balances) {
@@ -152,6 +161,7 @@ export abstract class WalletService {
         } else {
           const listOfAddresses: string[] = [];
           addresses.forEach((element) => { listOfAddresses.push(element.address); });
+          console.log('Calling unusedAddress endpoint');
           // eslint-disable-next-line no-await-in-loop
           if (await ApiService.areUnusedAddresses(listOfAddresses)) {
             return;
