@@ -174,7 +174,7 @@
 import {
   Component, Emit, Prop, Vue, Watch,
 } from 'vue-property-decorator';
-import { Action, State } from 'vuex-class';
+import { State } from 'vuex-class';
 import TxSummary from '@/components/exchange/TxSummary.vue';
 import { PegStatus } from '@/store/constants';
 import ApiService from '@/services/ApiService';
@@ -182,7 +182,6 @@ import { PeginStatus } from '@/store/types';
 import { PegInTxState } from '@/store/peginTx/types';
 import { TxData } from '@/types';
 import SatoshiBig from '@/types/SatoshiBig';
-import * as constants from '@/store/constants';
 
 @Component({
   components: {
@@ -221,8 +220,6 @@ export default class Status extends Vue {
   @Prop({ default: '' }) txIdProp!: string;
 
   @State('pegInTx') peginTxState!: PegInTxState;
-
-  @Action(constants.PEGIN_TX_ADD_BITCOIN_PRICE, { namespace: 'pegInTx' }) getBtcPrice !: () => Promise<void>;
 
   get showStatus() {
     return !this.loading && !this.error && !!this.statusMessage;
@@ -366,10 +363,6 @@ export default class Status extends Vue {
   @Emit()
   back() {
     this.$router.replace({ name: 'Home' });
-  }
-
-  async created() {
-    await this.getBtcPrice();
   }
 }
 </script>
