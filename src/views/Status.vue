@@ -146,7 +146,13 @@
         </v-row>
       </v-container>
       <v-container fluid class="transactions px-0">
-        <tx-summary v-if="!isRejected && showStatus" :statusFee="currentFee" :statusRefundAddress="currentRefundAddress" :txId="txId" :showTxId="true" :initialExpand="true"/>
+        <tx-summary
+        v-if="!isRejected && showStatus"
+        :statusFee="currentFee"
+        :statusRefundAddress="currentRefundAddress"
+        :txId="txId"
+        :showTxId="true"
+        :initialExpand="true"/>
         <v-row justify="center" class="mx-0 mt-5">
           <v-col cols="2" class="d-flex justify-start ma-0 pa-0">
             <v-btn rounded outlined color="#00B520" width="110" @click="back">
@@ -174,7 +180,7 @@ import TxSummary from '@/components/exchange/TxSummary.vue';
 import { ApiService } from '@/services';
 import * as constants from '@/store/constants';
 import {
-  PeginStatus, TxData, PegInTxState, SatoshiBig
+  PeginStatus, TxData, PegInTxState, SatoshiBig,
 } from '@/types';
 import EnvironmentContextProviderService from '@/providers/EnvironmentContextProvider';
 
@@ -223,7 +229,7 @@ export default class Status extends Vue {
   @State('pegInTx') peginTxState!: PegInTxState;
 
   @Action(constants.PEGIN_TX_ADD_AMOUNT_TO_TRANSFER, { namespace: 'pegInTx' }) setAmount !: (amount: SatoshiBig) => void;
-  
+
   @Action(constants.PEGIN_TX_ADD_RSK_ADDRESS, { namespace: 'pegInTx' }) setRskAddress !: (address: string) => void;
 
   @Action(constants.PEGIN_TX_INIT, { namespace: 'pegInTx' }) peginInit !: () => void;
@@ -251,7 +257,11 @@ export default class Status extends Vue {
     this.leftBtcTime = this.getTime((this.btcConfirmationsRequired - this.btcConfirmations) * 10);
     this.btcConfirmationsPercentage = this.btcConfirmations <= this.btcConfirmationsRequired
       ? (this.btcConfirmations * 100) / this.btcConfirmationsRequired : 100;
-    this.rskConfirmationsPercentage = this.pegInStatus.status === constants.PegStatus.CONFIRMED ? 100 : 0;
+    if (this.pegInStatus.status === constants.PegStatus.CONFIRMED) {
+      this.rskConfirmationsPercentage = 100;
+    } else {
+      this.rskConfirmationsPercentage = 0;
+    }
   }
 
   @Emit()
